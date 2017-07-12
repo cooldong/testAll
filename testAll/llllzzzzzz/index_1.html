@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+    <script>window.$ = window.jQuery = require('jquery');</script>
+  </head>
+  <body>
+
+    We are using Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+
+    <input type="text" onkeyup="getquote()" id="quoteinfo" style="width:90%;height:20px;padding:5px;text-align: center;border:1px solid #dddddd;border-radius:0px;">
+    <select  id='showquote' onchange="showrealf()" style="width:90%;height:80px;padding:5px;text-align: center;border:1px solid #dddddd;border-radius:0px;">
+
+    </select>
+
+    <select id='showreal' style="width:90%;height:80px;padding:5px;text-align: center;border:1px solid #dddddd;border-radius:0px;">
+
+    </select>
+    <button onclick="jiaoyi()"> 交易 </button>
+  </body>
+
+  <script>
+    var request = require('request');
+  // You can also require other files to run in this process
+    require('./renderer.js')
+  //
+    // var token_url = 'http://phone.sncaee.com:8020/200001?callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp1'
+    // request(token_url,function(error,response,body){
+    //   if (!error && response.statusCode == 200) {
+    //     var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+    //     var jsonres = JSON.parse(res)
+    //     var token_id = jsonres[0].token_id
+    //     //
+    //     var des_url = 'http://uc.kuailaichina.com/ajax/html5/getFundAccountAndPwdDes.json?jsonp=callFun&tradetoken='
+    //     +token_id+'&fundAccount=luzhao&fundpwd=dianzipan123&_='+(new Date().getTime())+'&callback=jsonp2'
+    //     request(des_url,function(error,response,body){
+    //       if (!error && response.statusCode == 200) {
+    //         var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+    //         var jsonres = JSON.parse(res)
+    //         var desaccount = jsonres[0].result.desFundAccount
+    //         var despasswd = jsonres[0].result.desFundPassword
+    //         //
+    //
+    //       }
+    //     })
+    //   }
+    // })
+    // var openId = '149872676561311902'
+    var openId = '149906385127316578'
+    var accesstoken;
+    var fundOtcAccount;
+    var realFields = "open_px,preclose_px,high_px,low_px,business_amount,business_balance,up_px,down_px,last_px,px_change,px_change_rate,bid_grp,offer_grp,prod_name,hq_type_code";
+
+    var accesstoken_url = 'http://uc.kuailaichina.com/server/app/quotationsToken.json?jsonp=callFun&openId='+openId+'&_='
+    +(new Date().getTime())+'&callback=jsonp1'
+    request(accesstoken_url,function(error,response,body){
+      if (!error && response.statusCode == 200) {
+        var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+        var jsonres = JSON.parse(res)
+        accesstoken = jsonres[0].accessToken
+      }
+    })
+
+    //login
+    var token_url = 'http://phone.sncaee.com:8020/200001?callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp1'
+    request(token_url,function(error,response,body){
+      if (!error && response.statusCode == 200) {
+        var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+        var jsonres = JSON.parse(res)
+        var token_id = jsonres[0].token_id
+        //
+        var des_url = 'http://uc.kuailaichina.com/ajax/html5/getFundAccountAndPwdDes.json?jsonp=callFun&tradetoken='
+        +token_id+'&fundAccount=xia88&fundpwd=walmr123&_='+(new Date().getTime())+'&callback=jsonp2'
+        request(des_url,function(error,response,body){
+          if (!error && response.statusCode == 200) {
+            var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+            var jsonres = JSON.parse(res)
+            var desaccount = jsonres[0].result.desFundAccount
+            var despasswd = jsonres[0].result.desFundPassword
+            //
+            var denglu_url1 = 'http://114.55.68.19:8020/331100?account_content='
+            +encodeURIComponent(desaccount)+'&exCode=CSXC&password='+encodeURIComponent(despasswd)+
+            '&token_id='+token_id+'&callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp3'
+            request(denglu_url1,function(error,response,body){
+              if (!error && response.statusCode == 200) {
+                var denglu_url2 = 'http://114.55.68.19:8020/619820?client_id='+encodeURIComponent(desaccount)
+                +'&fund_account='+encodeURIComponent(desaccount)+'&exCode=CSXC&password='
+                +encodeURIComponent(despasswd)+'&token_id='+token_id+'&callbackParam=success_jsonpCallback&_='
+                +(new Date().getTime())+'&callback=jsonp4'
+                request(denglu_url2,function(error,response,body){
+                  if (!error && response.statusCode == 200) {
+                    var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+                    var jsonres = JSON.parse(res)
+                    // var otc_account = jsonres[0].otc_account
+                    fundOtcAccount = jsonres[0].otc_account
+                  }
+                })
+              }
+            })
+          }
+        })
+      }
+    })
+    //
+  </script>
+
+  <script>
+    function jiaoyi(){
+      var token_url = 'http://phone.sncaee.com:8020/200001?callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp1'
+      request(token_url,function(error,response,body){
+        if (!error && response.statusCode == 200) {
+          var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+          var jsonres = JSON.parse(res)
+          var token_id = jsonres[0].token_id
+          //
+          var des_url = 'http://uc.kuailaichina.com/ajax/html5/getFundAccountAndPwdDes.json?jsonp=callFun&tradetoken='
+          +token_id+'&fundAccount='+fundOtcAccount+'&fundpwd=walmr123&_='+(new Date().getTime())+'&callback=jsonp2'
+          request(des_url,function(error,response,body){
+            if (!error && response.statusCode == 200) {
+              var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+              var jsonres = JSON.parse(res)
+              var desaccount = jsonres[0].result.desFundAccount
+              var despasswd = jsonres[0].result.desFundPassword
+              //
+              var denglu_url1 = 'http://114.55.68.19:8020/331100?account_content='
+              +encodeURIComponent(desaccount)+'&exCode=CSXC&password='+encodeURIComponent(despasswd)+
+              '&token_id='+token_id+'&callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp3'
+              request(denglu_url1,function(error,response,body){
+                if (!error && response.statusCode == 200) {
+                  var denglu_url2 = 'http://114.55.68.19:8020/619820?client_id='+encodeURIComponent(desaccount)
+                  +'&fund_account='+encodeURIComponent(desaccount)+'&exCode=CSXC&password='
+                  +encodeURIComponent(despasswd)+'&token_id='+token_id+'&callbackParam=success_jsonpCallback&_='
+                  +(new Date().getTime())+'&callback=jsonp4'
+                  request(denglu_url2,function(error,response,body){
+                    if (!error && response.statusCode == 200) {
+                      var res = '['+body.substring(body.indexOf("(")+1,body.lastIndexOf(")"))+']'
+                      var jsonres = JSON.parse(res)
+                      var otc_account = jsonres[0].otc_account
+                      //
+                      var jiaoyi_url = 'http://114.55.68.19:8020/619003?client_id='
+                      +encodeURIComponent(desaccount)+'&fund_account='+encodeURIComponent(desaccount)
+                      +'&exCode=CSXC&password=&token_id='+token_id+'&otc_code=600007&entrust_amount=1&entrust_price=11.45'
+                      +'&otc_prop=0B0&callbackParam=success_jsonpCallback&_='+(new Date().getTime())+'&callback=jsonp10'
+
+                      console.log('jiaoyi_url:'+jiaoyi_url);
+                      request(jiaoyi_url,function(error,response,body){
+                        if (!error && response.statusCode == 200) {
+                          console.log(error);
+                          console.log(response);
+                          console.log(body);
+                        }
+                      })
+                    }
+                  })
+                }
+              })
+            }
+          })
+        }
+      })
+    }
+
+    function getquote(){
+      var info = $("#quoteinfo").val()
+      var quote_url = 'https://open.hscloud.cn/quote/v1/wizard?prod_code='+info+'&en_finance_mic=CSXC&data_count=30'
+      +'&access_token='+accesstoken
+      request(quote_url,function(error,response,body){
+        if (!error && response.statusCode == 200) {
+          $("#showquote").html('')
+          $("#showquote").append('<option value=""></option>')
+          var jsonres = JSON.parse(body)
+          var showdataquote = jsonres.data
+          for(var i=0;i<showdataquote.length;i++){
+
+            $("#showquote").append(
+              '<option value='+showdataquote[i].prod_code+'>'+showdataquote[i].prod_code+'_'+showdataquote[i].prod_name+'</option>'
+            )
+          }
+        }
+      })
+    }
+
+    function showrealf(){
+      $("#showreal").html('')
+      $("#showreal").append('<option value=""></option>')
+      var quoteinfo = $("#showquote").val()
+      if(quoteinfo!=''){
+        var real_url = 'https://open.hscloud.cn/quote/v1/real?en_prod_code='+quoteinfo+
+        '&fields='+encodeURIComponent(realFields)+
+        '&access_token='+accesstoken
+        request(real_url,function(error,response,body){
+          if (!error && response.statusCode == 200) {
+            var jsonres = JSON.parse(body)
+            var showrealquote = jsonres.data.snapshot
+            console.log(showrealquote);
+            for(var o in showrealquote) if("fields" != o){
+              for (var a = showrealquote[o][13].split(","), r = 0; r < 15; r = 3 + r){
+
+                $("#showreal").append(
+                  '<option value='+a[r]+'>'+a[r]+'</option>'
+                )
+              }
+              $("#showreal").append(
+                '<option value='+showrealquote[o][8]+'>'+showrealquote[o][8]+'      涨停价'+'</option>'
+              )
+              $("#showreal").append(
+                '<option value='+showrealquote[o][9]+'>'+showrealquote[o][9]+'      跌停价'+'</option>'
+              )
+              break
+            }
+          }
+        })
+      }
+    }
+  </script>
+</html>

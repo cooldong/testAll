@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="gt3-java-sdk-master:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/gt3_java_sdk_master_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="gt3-java-sdk-master" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="gt3-java-sdk-master/web/Web" />
+    </root>
+  </artifact>
+</component>
