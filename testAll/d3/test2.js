@@ -2,7 +2,7 @@ var svgWidth = 400
 var svgHeight = 400
 var svg1 = d3.select("#re1").append("svg").attr("width",svgWidth).attr("height",svgHeight)
 var dataset = [ 30 , 10 , 43 , 55 , 13 ];
-var color = d3.scale.category10();
+var color = d3.scaleOrdinal(d3.schemeCategory10);
 var pie = d3.pie()
 var piedata = pie(dataset)
 var arc = d3.arc()
@@ -15,7 +15,7 @@ var arcs = svg1.selectAll("g")
                 .attr("transform","translate("+svgWidth/2+","+svgHeight/2+")")
 arcs.append("path")
     .attr("fill",function(i){
-      return color(i)
+      return color(i.index)
     })
     .attr("d",function(d){
       return arc(d)
