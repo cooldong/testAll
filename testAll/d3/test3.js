@@ -34,7 +34,7 @@ d3.json("city_tree.json", function(error, data) {
       .attr("x", function(d) { return d.children ? -8 : 8; })
       .style("text-anchor", function(d) { return d.children ? "end" : "start"; })
       .text(function(d) {
-        console.log(d);
+        // console.log(d);
         return d.data.name;
       });
 });
@@ -43,3 +43,37 @@ d3.json("city_tree.json", function(error, data) {
 //         .sort(function(a, b) { return (a.height - b.height) || a.id.localeCompare(b.id); });
 //   console.log(root);
 // })
+
+var svg = d3.select("#re2").append("svg").attr("width",width).attr("height",height)
+var projection = d3.geoMercator()
+    .center([107, 31])
+    .scale(850)
+    .translate([width/2, height/2+150]);
+var path = d3.geoPath()
+    .projection(projection);
+var color = d3.scaleOrdinal(d3.schemeCategory20);
+d3.json("china.json", function(error, root) {
+
+    if (error)
+        return console.error(error);
+    console.log(root.features);
+
+    svg.selectAll("path")
+        .data(root.features)
+        .enter()
+        .append("path")
+        .attr("stroke","#000")
+        .attr("stroke-width",1)
+        .attr("fill", function(d,i){
+            return color(i);
+        })
+        .attr("d", path )   //使用地理路径生成器
+        .on("mouseover",function(d,i){
+                    d3.select(this)
+                       .attr("fill","yellow");
+                })
+                .on("mouseout",function(d,i){
+                    d3.select(this)
+                       .attr("fill",color(i));
+                });
+});
