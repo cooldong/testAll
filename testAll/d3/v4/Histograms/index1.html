@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Histograms</title>
+</head>
+<body>
+
+</body>
+<script src="../../d3/d3.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+  var width = 800;
+  var height = 800;
+  var margin = {top:10,right:30,bottom:30,left:30}
+  width = width - margin.left - margin.right;
+  height = height - margin.top - margin.bottom;
+  var dataset = [10, 20, 30, 40, 33, 24, 12, 5];
+  var scalex = d3.scaleBand()
+                  .domain(d3.range(dataset.length))
+                  .range([0,width]);
+  var scaley = d3.scaleLinear()
+                  .domain([0,d3.max(dataset)])
+                  .range([0,height]);
+  var histogram = d3.histogram()
+                    .value(function(d){return d})
+                    .domain(scalex.domain())
+                    .thresholds(d3.ticks(0, width, dataset.length))
+  console.log(d3.ticks(0, width, dataset.length));
+  var bins = histogram(dataset)
+  console.log(bins);
+</script>
+</html>

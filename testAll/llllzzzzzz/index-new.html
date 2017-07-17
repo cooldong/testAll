@@ -138,10 +138,13 @@
   }
 
   function jiaoyi(){
-    var jiaoyi_url = host1+'/619003?callbackParam=success_jsonpCallback&token_id='+jiaoyitoken
+    // cishu = cishu + 1;
+    jiaoyitokenindex =jiaoyitokenindex + 1;
+    // jiaoyitoken = token_ids[jiaoyitokenindex%zhanghaosnum]
+    var jiaoyi_url = host1+'/619003?callbackParam=success_jsonpCallback&token_id='+token_ids[jiaoyitokenindex%zhanghaosnum]
     +'&otc_code='+$('#code1').val()+'&entrust_price='+$('#price1').val()+'&entrust_amount='
     +$('#ennum1').val()+'&otc_prop=0B0&_='+(new Date().getTime())
-    // cishu = cishu + 1;
+
     // console.log(cishu);
     request(jiaoyi_url,function(error,response,body){
       if (!error && response.statusCode == 200) {
@@ -150,10 +153,10 @@
         var jsonres = JSON.parse(res)
         flag = jsonres[0].error_no
         if(flag !='0'){
-          if(flag =='-999' || flag =='-1013'){//-999:频发交易 -1013：身份失效
-            jiaoyitokenindex = jiaoyitokenindex + 1
-            jiaoyitoken = token_ids[jiaoyitokenindex%zhanghaosnum]
-          }
+          // if(flag =='-999' || flag =='-1013'){//-999:频发交易 -1013：身份失效
+          //   jiaoyitokenindex = jiaoyitokenindex + 1
+          //   // jiaoyitoken = token_ids[jiaoyitokenindex%zhanghaosnum]
+          // }
           jiaoyi()
         }
       }else {
